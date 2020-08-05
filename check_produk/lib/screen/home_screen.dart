@@ -10,7 +10,7 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   List<Map<String, dynamic>> productList = [];
 
   List<Map<String, dynamic>> get selectedProduct =>
@@ -47,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
     )..show(context);
   }
 
+  //
   String format(int number) {
     var numberformat =
         NumberFormat.currency(locale: 'id_ID', decimalDigits: 0, symbol: 'Rp ')
@@ -56,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(productList);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: tealColor,
@@ -82,16 +82,32 @@ class _HomeScreenState extends State<HomeScreen> {
                               onChanged: (value) =>
                                   handleOnChange(value, index),
                             ),
-                            Container(
-                              width: 70.0,
-                              height: 60.0,
-                              decoration: BoxDecoration(
-                                borderRadius: borderRadius8,
-                                border: Border.all(color: tealColor, width: 1),
-                                image: DecorationImage(
-                                  image: NetworkImage(produk['photo']),
-                                  fit: BoxFit.cover,
-                                ),
+                            CachedNetworkImage(
+                              imageUrl: produk['photo'],
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) =>
+                                      SpinKitPulse(
+                                          //value: downloadProgress.progress,
+                                          color: Colors.red[300],
+                                          controller: AnimationController(
+                                              vsync: this,
+                                              value: downloadProgress.progress,
+                                              duration: const Duration(
+                                                  milliseconds: 1200))),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                width: 70.0,
+                                height: 60.0,
+                                decoration: BoxDecoration(
+                                    borderRadius: borderRadius8,
+                                    border:
+                                        Border.all(color: tealColor, width: 1),
+                                    image: DecorationImage(
+                                      image: imageProvider,
+                                      fit: BoxFit.cover,
+                                    )),
                               ),
                             ),
                             SizedBox(width: 25),
